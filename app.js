@@ -10,6 +10,11 @@ class TradeRoutePlanner {
         this.prices = [];
         this.routes = [];
         
+        // Constants for calculations
+        this.DEFAULT_SHIP_SPEED = 150; // Average ship speed in m/s when not using specific ship profile
+        this.FUEL_COST_PER_UNIT = 100; // Cost per fuel unit in aUEC
+        this.DEADHEAD_SAFETY_PENALTY = 1000; // Multiplier for deadhead legs in safety scoring
+        
         // Ship profiles with cargo capacity, speed, and fuel usage
         this.ships = [
             { id: 'freelancer', name: 'Freelancer', cargo: 66, speed: 170, fuelUsage: 1.0, risk: 'medium' },
@@ -273,7 +278,7 @@ class TradeRoutePlanner {
                     if (totalProfit > 0 && unitsToTrade > 0) {
                         const sellLocationId = sellPrice.id_location || sellPrice.location_id;
                         const distance = this.calculateDistance(startLocationId, sellLocationId);
-                        const travelTime = this.calculateTravelTime(distance, 150); // Average speed
+                        const travelTime = this.calculateTravelTime(distance, this.DEFAULT_SHIP_SPEED);
                         
                         routes.push({
                             totalProfit,
@@ -521,27 +526,31 @@ class TradeRoutePlanner {
     
     calculateDistance(locationId1, locationId2) {
         // Simple distance estimation based on location IDs
-        // In a real implementation, this would use actual coordinates
-        // For now, return a pseudo-random but consistent distance
+        // In a real implementation, this would use actual coordinates from the API
+        // For now, return a pseudo-random but consistent distance in Mkm (millions of kilometers)
         const id1 = parseInt(locationId1);
         const id2 = parseInt(locationId2);
         const diff = Math.abs(id1 - id2);
-        return Math.min(50 + (diff * 10), 500); // Distance in millions of km
+        return Math.min(50 + (diff * 10), 500); // Distance in Mkm (millions of kilometers)
     }
     
     calculateTravelTime(distance, speed) {
         // Calculate travel time in minutes
-        // Assuming speed is in m/s and distance is in millions of km
-        // This is a simplified calculation
+        // Parameters:
+        //   distance: Distance in Mkm (millions of kilometers)
+        //   speed: Ship speed in m/s
+        // Calculation: distance (Mkm) * 1,000,000 = meters, divided by speed (m/s) * 60 = meters per minute
         const timeInMinutes = (distance * 1000000) / (speed * 60);
-        return Math.round(timeInMinutes * 10) / 10; // Round to 1 decimal
+        return Math.round(timeInMinutes * 10) / 10; // Round to 1 decimal place
     }
     
     calculateFuelCost(distance, fuelUsage) {
         // Calculate fuel cost based on distance and ship fuel usage
-        // Assuming 1 fuel unit = 100 aUEC
+        // Parameters:
+        //   distance: Distance in Mkm (millions of kilometers)
+        //   fuelUsage: Ship-specific fuel consumption multiplier
         const fuelUnits = (distance / 100) * fuelUsage;
-        return Math.round(fuelUnits * 100);
+        return Math.round(fuelUnits * this.FUEL_COST_PER_UNIT);
     }
     
     rankRoutes(rankBy) {
@@ -557,9 +566,10 @@ class TradeRoutePlanner {
                 break;
             case 'safety':
                 // Rank by fewer deadheads and shorter distances
+                // Lower safety score = safer route
                 this.routes.sort((a, b) => {
-                    const safetyScoreA = (a.numDeadheads || 0) * 1000 + a.totalDistance;
-                    const safetyScoreB = (b.numDeadheads || 0) * 1000 + b.totalDistance;
+                    const safetyScoreA = (a.numDeadheads || 0) * this.DEADHEAD_SAFETY_PENALTY + a.totalDistance;
+                    const safetyScoreB = (b.numDeadheads || 0) * this.DEADHEAD_SAFETY_PENALTY + b.totalDistance;
                     return safetyScoreA - safetyScoreB;
                 });
                 break;
