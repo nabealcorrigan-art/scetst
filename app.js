@@ -667,7 +667,7 @@ class TradeRoutePlanner {
                         </div>
                         <div class="hop-detail">
                             <div class="hop-detail-label">Distance</div>
-                            <div class="hop-detail-value">${hop.distance.toFixed(0)} M km</div>
+                            <div class="hop-detail-value">${hop.distance.toFixed(0)} million km</div>
                         </div>
                         <div class="hop-detail">
                             <div class="hop-detail-label">Travel Time</div>
@@ -728,7 +728,7 @@ class TradeRoutePlanner {
                         </div>
                         <div class="hop-detail">
                             <div class="hop-detail-label">Distance</div>
-                            <div class="hop-detail-value">${hop.distance ? hop.distance.toFixed(0) + ' M km' : 'N/A'}</div>
+                            <div class="hop-detail-value">${hop.distance ? hop.distance.toFixed(0) + ' million km' : 'N/A'}</div>
                         </div>
                         <div class="hop-detail">
                             <div class="hop-detail-label">Travel Time</div>
@@ -781,7 +781,7 @@ class TradeRoutePlanner {
             summaryHTML += `
                 <div class="summary-item">
                     <div class="summary-label">Total Distance</div>
-                    <div class="summary-value">${route.totalDistance.toFixed(0)} M km</div>
+                    <div class="summary-value">${route.totalDistance.toFixed(0)} million km</div>
                 </div>
             `;
         }
