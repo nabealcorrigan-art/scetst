@@ -54,7 +54,7 @@ The application:
 
 This application uses the [UEX Corp API 2.0](https://uexcorp.space/api/documentation/):
 
-- **Base URL**: `https://api.uexcorp.uk/2.0`
+- **Base URL**: `https://api.uexcorp.uk/2.0` (Note: The API uses the .uk domain, while the main site is at uexcorp.space)
 - **Endpoints Used**:
   - `/locations` - Get all trading locations
   - `/commodities` - Get all tradeable commodities

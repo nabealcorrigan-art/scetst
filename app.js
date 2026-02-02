@@ -254,14 +254,14 @@ class TradeRoutePlanner {
 
     getLocationName(locationId) {
         const location = this.locations.find(loc => 
-            (loc.id || loc.id_location) == locationId
+            String(loc.id || loc.id_location) === String(locationId)
         );
         return location ? (location.name || location.location_name || 'Unknown') : 'Unknown Location';
     }
 
     getCommodityName(commodityId) {
         const commodity = this.commodities.find(com => 
-            (com.id || com.id_commodity || com.commodity_id) == commodityId
+            String(com.id || com.id_commodity || com.commodity_id) === String(commodityId)
         );
         return commodity ? (commodity.name || commodity.commodity_name || 'Unknown') : 'Unknown Commodity';
     }
