@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Citizen Trade Route Planner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Star Citizen Trade Route Planner</h1>
+            <p class="subtitle">Multi-hop trade route optimizer using live UEX Corp data</p>
+        </header>
+
+        <div class="config-section">
+            <h2>Configuration</h2>
+            <div class="input-group">
+                <label for="api-key">UEX Corp API Key:</label>
+                <input type="password" id="api-key" placeholder="Enter your API key from uexcorp.space">
+                <small>Get your free API key at <a href="https://uexcorp.space/api" target="_blank">uexcorp.space/api</a></small>
+            </div>
+            <div class="input-group">
+                <label for="starting-location">Starting Location:</label>
+                <select id="starting-location">
+                    <option value="">Select location...</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="max-hops">Maximum Hops:</label>
+                <input type="number" id="max-hops" value="3" min="1" max="5">
+            </div>
+            <div class="input-group">
+                <label for="cargo-capacity">Cargo Capacity (SCU):</label>
+                <input type="number" id="cargo-capacity" value="100" min="1">
+            </div>
+            <div class="input-group">
+                <label for="starting-credits">Starting Credits (aUEC):</label>
+                <input type="number" id="starting-credits" value="100000" min="0">
+            </div>
+        </div>
+
+        <div class="action-section">
+            <button id="load-data-btn" class="btn btn-primary">Load Trade Data</button>
+            <button id="calculate-route-btn" class="btn btn-success" disabled>Calculate Best Routes</button>
+        </div>
+
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Loading trade data...</p>
+        </div>
+
+        <div id="error" class="error hidden"></div>
+
+        <div id="results" class="results hidden">
+            <h2>Recommended Trade Routes</h2>
+            <div id="routes-container"></div>
+        </div>
+
+        <div id="data-summary" class="data-summary hidden">
+            <h3>Data Summary</h3>
+            <div id="summary-content"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
