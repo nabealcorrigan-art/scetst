@@ -527,19 +527,19 @@ class TradeRoutePlanner {
     calculateDistance(locationId1, locationId2) {
         // Simple distance estimation based on location IDs
         // In a real implementation, this would use actual coordinates from the API
-        // For now, return a pseudo-random but consistent distance in Mkm (millions of kilometers)
+        // For now, return a pseudo-random but consistent distance in million km
         const id1 = parseInt(locationId1);
         const id2 = parseInt(locationId2);
         const diff = Math.abs(id1 - id2);
-        return Math.min(50 + (diff * 10), 500); // Distance in Mkm (millions of kilometers)
+        return Math.min(50 + (diff * 10), 500); // Distance in million km
     }
     
     calculateTravelTime(distance, speed) {
         // Calculate travel time in minutes
         // Parameters:
-        //   distance: Distance in Mkm (millions of kilometers)
+        //   distance: Distance in million km
         //   speed: Ship speed in m/s
-        // Calculation: distance (Mkm) * 1,000,000 = meters, divided by speed (m/s) * 60 = meters per minute
+        // Calculation: distance (million km) * 1,000,000 (meters per million km) / (speed (m/s) * 60 (seconds per minute))
         const timeInMinutes = (distance * 1000000) / (speed * 60);
         return Math.round(timeInMinutes * 10) / 10; // Round to 1 decimal place
     }
@@ -547,7 +547,7 @@ class TradeRoutePlanner {
     calculateFuelCost(distance, fuelUsage) {
         // Calculate fuel cost based on distance and ship fuel usage
         // Parameters:
-        //   distance: Distance in Mkm (millions of kilometers)
+        //   distance: Distance in million km
         //   fuelUsage: Ship-specific fuel consumption multiplier
         const fuelUnits = (distance / 100) * fuelUsage;
         return Math.round(fuelUnits * this.FUEL_COST_PER_UNIT);
@@ -660,7 +660,7 @@ class TradeRoutePlanner {
                         </div>
                         <div class="hop-detail">
                             <div class="hop-detail-label">Distance</div>
-                            <div class="hop-detail-value">${hop.distance.toFixed(0)} Mkm</div>
+                            <div class="hop-detail-value">${hop.distance.toFixed(0)} M km</div>
                         </div>
                         <div class="hop-detail">
                             <div class="hop-detail-label">Travel Time</div>
@@ -721,7 +721,7 @@ class TradeRoutePlanner {
                         </div>
                         <div class="hop-detail">
                             <div class="hop-detail-label">Distance</div>
-                            <div class="hop-detail-value">${hop.distance ? hop.distance.toFixed(0) + ' Mkm' : 'N/A'}</div>
+                            <div class="hop-detail-value">${hop.distance ? hop.distance.toFixed(0) + ' M km' : 'N/A'}</div>
                         </div>
                         <div class="hop-detail">
                             <div class="hop-detail-label">Travel Time</div>
@@ -774,7 +774,7 @@ class TradeRoutePlanner {
             summaryHTML += `
                 <div class="summary-item">
                     <div class="summary-label">Total Distance</div>
-                    <div class="summary-value">${route.totalDistance.toFixed(0)} Mkm</div>
+                    <div class="summary-value">${route.totalDistance.toFixed(0)} M km</div>
                 </div>
             `;
         }
