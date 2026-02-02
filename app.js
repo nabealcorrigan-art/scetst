@@ -369,8 +369,9 @@ class TradeRoutePlanner {
                     const sellLocationId = sellPrice.id_location || sellPrice.location_id;
                     if (sellLocationId === parseInt(currentLocationId)) return;
                     
-                    // Avoid revisiting locations too soon (allow revisit after 2 hops)
-                    if (visitedLocations.includes(sellLocationId) && routePath.length < maxHops - 1) return;
+                    // Avoid revisiting locations during route building, except for the final hop back to start
+                    // Allow revisits only when we're on the last possible hop (to enable circular routes)
+                    if (visitedLocations.includes(sellLocationId) && routePath.length < maxHops * 2 - 2) return;
                     
                     if (!sellPrice.price_sell || sellPrice.price_sell <= 0) return;
                     
@@ -525,13 +526,13 @@ class TradeRoutePlanner {
     }
     
     calculateDistance(locationId1, locationId2) {
-        // Simple distance estimation based on location IDs
-        // In a real implementation, this would use actual coordinates from the API
-        // For now, return a pseudo-random but consistent distance in million km
+        // PLACEHOLDER: Simple distance estimation based on location IDs
+        // Production implementation should use actual coordinates from the API
+        // and calculate real distances between locations
         const id1 = parseInt(locationId1);
         const id2 = parseInt(locationId2);
         const diff = Math.abs(id1 - id2);
-        return Math.min(50 + (diff * 10), 500); // Distance in million km
+        return Math.min(50 + (diff * 10), 500); // Distance in million km (placeholder values)
     }
     
     calculateTravelTime(distance, speed) {
@@ -539,9 +540,13 @@ class TradeRoutePlanner {
         // Parameters:
         //   distance: Distance in million km
         //   speed: Ship speed in m/s
-        // Calculation: distance (million km) * 1,000,000 (meters per million km) / (speed (m/s) * 60 (seconds per minute))
-        const timeInMinutes = (distance * 1000000) / (speed * 60);
-        return Math.round(timeInMinutes * 10) / 10; // Round to 1 decimal place
+        // Conversion: distance (million km) * 1,000,000 (km to million meters) * 1000 (to meters)
+        //            divided by speed (m/s) to get seconds, then divided by 60 for minutes
+        const DECIMAL_PLACES = 1;
+        const distanceInMeters = distance * 1000000 * 1000; // million km to meters
+        const timeInSeconds = distanceInMeters / speed;
+        const timeInMinutes = timeInSeconds / 60;
+        return Math.round(timeInMinutes * Math.pow(10, DECIMAL_PLACES)) / Math.pow(10, DECIMAL_PLACES);
     }
     
     calculateFuelCost(distance, fuelUsage) {
@@ -549,6 +554,8 @@ class TradeRoutePlanner {
         // Parameters:
         //   distance: Distance in million km
         //   fuelUsage: Ship-specific fuel consumption multiplier
+        // Formula: Divide distance by 100 as a scaling factor for game balance,
+        //          multiply by ship's fuel usage rate, then by cost per unit
         const fuelUnits = (distance / 100) * fuelUsage;
         return Math.round(fuelUnits * this.FUEL_COST_PER_UNIT);
     }
