@@ -4,7 +4,29 @@ A web-based trade route planner for Star Citizen that uses live data from [UEX C
 
 ## Installation
 
-### Quick Install
+### Quick Install (Recommended)
+
+This application includes a built-in proxy server to handle CORS issues when accessing the UEX Corp API.
+
+**Prerequisites:**
+- Node.js (version 12 or higher) - [Download here](https://nodejs.org/)
+
+**Installation Steps:**
+
+1. Clone or download this repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the proxy server:
+   ```bash
+   npm start
+   ```
+4. Open your browser to: `http://localhost:8000`
+
+The proxy server will automatically handle API requests and serve the web application.
+
+### Alternative: Quick Install Scripts
 
 **On Linux/macOS:**
 ```bash
@@ -22,13 +44,13 @@ The install scripts will:
 - Provide instructions for getting started
 - Optionally start a local web server
 
-### Manual Installation
+### Manual Installation (Not Recommended - CORS Issues)
 
-No installation required! This is a static web application that runs entirely in your browser:
+**Note:** Running the application without the proxy server will result in CORS errors when trying to access the UEX Corp API. The recommended approach is to use the Node.js proxy server.
 
+If you still want to try without the proxy:
 1. Clone or download this repository
-2. Open `index.html` in your web browser, or
-3. Serve the files with any web server:
+2. Serve the files with any web server:
    ```bash
    # Python 3
    python3 -m http.server 8000
@@ -39,9 +61,9 @@ No installation required! This is a static web application that runs entirely in
    # PHP
    php -S localhost:8000
    ```
-4. Visit `http://localhost:8000` in your browser
+3. Visit `http://localhost:8000` in your browser
 
-**Note:** Some browsers restrict API calls when opening HTML files directly (file:// protocol). Using a local web server is recommended.
+**Note:** Due to CORS restrictions on the UEX Corp API, direct browser access may not work. Use the proxy server method above for reliable operation.
 
 ## Features
 
@@ -146,6 +168,8 @@ The application provides strategic planning beyond simple buy-low-sell-high:
 - `index.html` - Main application interface with advanced configuration options
 - `app.js` - Multi-hop route calculation engine and API integration
 - `style.css` - Modern responsive design with route visualization
+- `proxy-server.js` - CORS proxy server for UEX Corp API
+- `package.json` - Node.js dependencies and scripts
 - `README.md` - This documentation
 
 ## API Integration
@@ -153,6 +177,7 @@ The application provides strategic planning beyond simple buy-low-sell-high:
 This application uses the [UEX Corp API 2.0](https://uexcorp.space/api/documentation/):
 
 - **Base URL**: `https://api.uexcorp.uk/2.0` (Note: The API uses the .uk domain, while the main site is at uexcorp.space)
+- **Proxy URL**: `/api` (when using the proxy server, requests are made to this local endpoint)
 - **Endpoints Used**:
   - `/locations` - Get all trading locations
   - `/commodities` - Get all tradeable commodities
@@ -175,6 +200,38 @@ UEX Corp API has the following limits:
 - 10 requests per minute
 
 The application makes 3 API calls to load data, so use responsibly.
+
+## Troubleshooting
+
+### CORS Errors
+
+If you see errors like:
+```
+Access to fetch at 'https://api.uexcorp.uk/2.0/locations' has been blocked by CORS policy
+```
+
+**Solution:** Use the proxy server (recommended method)
+1. Make sure Node.js is installed
+2. Run `npm install` to install dependencies
+3. Run `npm start` to start the proxy server
+4. Access the app at `http://localhost:8000`
+
+The proxy server handles all API requests and adds the necessary CORS headers, eliminating browser restrictions.
+
+### Port Already in Use
+
+If port 8000 is already in use, you can change it:
+```bash
+PORT=3000 npm start
+```
+Then access the app at `http://localhost:3000`
+
+### API Key Issues
+
+Make sure you have a valid UEX Corp API key:
+1. Visit [https://uexcorp.space/api](https://uexcorp.space/api)
+2. Register and create an application
+3. Copy the Bearer token and paste it into the application
 
 ## Advanced Features Explained
 
