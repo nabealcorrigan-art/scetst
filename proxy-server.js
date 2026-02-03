@@ -11,10 +11,8 @@ const UEX_API_BASE = 'https://api.uexcorp.uk/2.0';
 // Enable CORS for all origins
 app.use(cors());
 
-// Serve static files (index.html, app.js, style.css)
-app.use(express.static(__dirname));
-
 // Proxy endpoint for UEX Corp API - supports all HTTP methods
+// This MUST come before static file serving to ensure API routes take precedence
 app.all('/api/*', async (req, res) => {
     // Extract the path after /api/
     const apiPath = req.path.replace('/api', '');
@@ -67,14 +65,19 @@ app.all('/api/*', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
+// Serve static files (index.html, app.js, style.css)
+// This comes AFTER API routes so /api/* routes take precedence
+app.use(express.static(__dirname));
+
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`
 ╔════════════════════════════════════════════════════════════╗
 ║  Star Citizen Trade Route Planner - Proxy Server          ║
 ╚════════════════════════════════════════════════════════════╝
 
-✓ Server running on: http://localhost:${PORT}
-✓ Open your browser to: http://localhost:${PORT}
+✓ Server running on port: ${PORT}
+✓ Local access: http://localhost:${PORT}
+✓ Network access: http://<your-ip>:${PORT}
 ✓ API requests will be proxied through this server to avoid CORS issues
 
 Press Ctrl+C to stop the server
