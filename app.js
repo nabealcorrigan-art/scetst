@@ -4,7 +4,9 @@
 class TradeRoutePlanner {
     constructor() {
         this.apiKey = '';
-        this.baseUrl = 'https://api.uexcorp.uk/2.0';
+        // Use local proxy server to avoid CORS issues
+        // All API requests go through the /api proxy endpoint
+        this.baseUrl = '/api';
         this.locations = [];
         this.commodities = [];
         this.prices = [];
