@@ -14,8 +14,8 @@ app.use(cors());
 // Serve static files (index.html, app.js, style.css)
 app.use(express.static(__dirname));
 
-// Proxy endpoint for UEX Corp API
-app.get('/api/*', async (req, res) => {
+// Proxy endpoint for UEX Corp API - supports all HTTP methods
+app.all('/api/*', async (req, res) => {
     // Extract the path after /api/
     const apiPath = req.path.replace('/api', '');
     const targetUrl = `${UEX_API_BASE}${apiPath}`;
@@ -41,8 +41,20 @@ app.get('/api/*', async (req, res) => {
             headers: headers
         });
         
-        // Get the response data
-        const data = await response.json();
+        // Get the response data - handle both JSON and non-JSON responses
+        let data;
+        const contentType = response.headers.get('content-type');
+        try {
+            if (contentType && contentType.includes('application/json')) {
+                data = await response.json();
+            } else {
+                const text = await response.text();
+                data = { data: text };
+            }
+        } catch (parseError) {
+            console.error('Error parsing response:', parseError);
+            data = { status: 'error', message: 'Failed to parse API response: ' + parseError.message };
+        }
         
         // Send the response back to the client with the same status code
         res.status(response.status).json(data);

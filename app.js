@@ -5,11 +5,8 @@ class TradeRoutePlanner {
     constructor() {
         this.apiKey = '';
         // Use local proxy server to avoid CORS issues
-        // When running locally with proxy-server.js, API requests go through /api
-        // If you want to access directly, change this back to 'https://api.uexcorp.uk/2.0'
-        this.baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.includes('192.168')
-            ? '/api'  // Use local proxy when running on localhost or local network
-            : '/api'; // Use proxy for all requests to avoid CORS
+        // All API requests go through the /api proxy endpoint
+        this.baseUrl = '/api';
         this.locations = [];
         this.commodities = [];
         this.prices = [];
