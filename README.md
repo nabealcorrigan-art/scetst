@@ -2,6 +2,47 @@
 
 A web-based trade route planner for Star Citizen that uses live data from [UEX Corp](https://uexcorp.space) to help players plan optimal multi-hop trade routes with advanced metrics and strategic planning features.
 
+## Installation
+
+### Quick Install
+
+**On Linux/macOS:**
+```bash
+./install.sh
+```
+
+**On Windows:**
+```batch
+install.bat
+```
+
+The install scripts will:
+- Check for required dependencies
+- Detect available web servers (Python, Node.js, PHP)
+- Provide instructions for getting started
+- Optionally start a local web server
+
+### Manual Installation
+
+No installation required! This is a static web application that runs entirely in your browser:
+
+1. Clone or download this repository
+2. Open `index.html` in your web browser, or
+3. Serve the files with any web server:
+   ```bash
+   # Python 3
+   python3 -m http.server 8000
+   
+   # Node.js (with http-server)
+   npx http-server -p 8000
+   
+   # PHP
+   php -S localhost:8000
+   ```
+4. Visit `http://localhost:8000` in your browser
+
+**Note:** Some browsers restrict API calls when opening HTML files directly (file:// protocol). Using a local web server is recommended.
+
 ## Features
 
 ### Core Functionality
