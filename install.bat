@@ -116,7 +116,7 @@ if defined WEB_SERVER (
         echo Press Ctrl+C to stop the server
         echo.
         
-        REM Try to open the browser
+        REM Wait briefly for server to start before opening browser
         timeout /t 2 /nobreak >nul
         start http://localhost:8000
         
@@ -137,6 +137,6 @@ if defined WEB_SERVER (
 )
 
 echo.
-echo Happy trading in the verse! [ship emoji]
+echo Happy trading in the verse!
 echo.
 pause

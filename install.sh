@@ -40,13 +40,13 @@ if command_exists python3; then
     echo -e "${GREEN}✓${NC} Python 3 found (can use built-in HTTP server)"
     WEB_SERVER="python3"
 elif command_exists python; then
-    PYTHON_VERSION=$(python --version 2>&1 | grep -oE '[0-9]+' | head -1)
-    if [ "$PYTHON_VERSION" -ge 3 ]; then
+    # Check Python version - Python 2 is EOL and not recommended
+    PYTHON_VERSION=$(python --version 2>&1)
+    if echo "$PYTHON_VERSION" | grep -q "Python 3"; then
         echo -e "${GREEN}✓${NC} Python 3 found (can use built-in HTTP server)"
         WEB_SERVER="python"
     else
-        echo -e "${YELLOW}!${NC} Python 2 found (can use built-in HTTP server, but Python 3 is recommended)"
-        WEB_SERVER="python2"
+        echo -e "${YELLOW}!${NC} Python 2 found (EOL, not recommended - please install Python 3)"
     fi
 fi
 
@@ -121,11 +121,14 @@ if [ -n "$WEB_SERVER" ]; then
         echo -e "${YELLOW}Press Ctrl+C to stop the server${NC}"
         echo ""
         
+        # Delay before opening browser to allow server to start
+        BROWSER_LAUNCH_DELAY=2
+        
         # Try to open the browser
         if command_exists xdg-open; then
-            sleep 2 && xdg-open "http://localhost:8000" &
+            sleep $BROWSER_LAUNCH_DELAY && xdg-open "http://localhost:8000" &
         elif command_exists open; then
-            sleep 2 && open "http://localhost:8000" &
+            sleep $BROWSER_LAUNCH_DELAY && open "http://localhost:8000" &
         fi
         
         # Start the server
