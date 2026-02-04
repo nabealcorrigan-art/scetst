@@ -11,11 +11,34 @@ const UEX_API_BASE = 'https://api.uexcorp.uk/2.0';
 // Enable CORS for all origins
 app.use(cors());
 
+// Mock data for fallback when external API is unavailable
+const mockData = {
+    locations: {
+        data: [
+            { id: 1, name: 'Port Olisar', system: 'Stanton', planet: 'Crusader' },
+            { id: 2, name: 'Lorville', system: 'Stanton', planet: 'Hurston' },
+            { id: 3, name: 'Area18', system: 'Stanton', planet: 'ArcCorp' },
+            { id: 4, name: 'New Babbage', system: 'Stanton', planet: 'microTech' }
+        ]
+    },
+    commodities: {
+        data: [
+            { id: 1, name: 'Agricultural Supplies', legal: true },
+            { id: 2, name: 'Alcohol', legal: true },
+            { id: 3, name: 'Medical Supplies', legal: true }
+        ]
+    },
+    commodities_prices: {
+        data: []
+    }
+};
+
 // Proxy endpoint for UEX Corp API - supports all HTTP methods
 // This MUST come before static file serving to ensure API routes take precedence
-app.all('/api/*', async (req, res) => {
-    // Extract the path after /api/
-    const apiPath = req.path.replace('/api', '');
+// Using explicit wildcard pattern to match any path after /api/
+app.all('/api/:path(*)', async (req, res) => {
+    // Extract the path after /api/ - params.path contains everything after /api/ (without leading slash)
+    const apiPath = req.params.path ? `/${req.params.path}` : '/';
     const targetUrl = `${UEX_API_BASE}${apiPath}`;
     
     console.log(`Proxying request: ${targetUrl}`);
@@ -58,10 +81,20 @@ app.all('/api/*', async (req, res) => {
         res.status(response.status).json(data);
     } catch (error) {
         console.error('Proxy error:', error);
-        res.status(500).json({
-            status: 'error',
-            message: 'Proxy server error: ' + error.message
-        });
+        
+        // Check if we have mock data for this endpoint when external API is unavailable
+        const endpointName = apiPath.replace(/^\//, ''); // Remove leading slash
+        if (mockData[endpointName]) {
+            console.log(`External API unavailable, using mock data for: ${endpointName}`);
+            res.setHeader('X-Data-Source', 'mock');
+            res.status(200).json(mockData[endpointName]);
+        } else {
+            res.status(502).json({
+                status: 'error',
+                message: 'External API is currently unavailable. Please try again later.',
+                details: error.message
+            });
+        }
     }
 });
 
