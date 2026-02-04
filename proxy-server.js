@@ -37,8 +37,8 @@ const mockData = {
 // This MUST come before static file serving to ensure API routes take precedence
 // Using explicit wildcard pattern to match any path after /api/
 app.all('/api/:path(*)', async (req, res) => {
-    // Extract the path after /api/ - params.path contains everything after /api/
-    const apiPath = '/' + (req.params.path || '');
+    // Extract the path after /api/ - params.path contains everything after /api/ (without leading slash)
+    const apiPath = req.params.path ? `/${req.params.path}` : '/';
     const targetUrl = `${UEX_API_BASE}${apiPath}`;
     
     console.log(`Proxying request: ${targetUrl}`);
@@ -86,9 +86,10 @@ app.all('/api/:path(*)', async (req, res) => {
         const endpointName = apiPath.replace(/^\//, ''); // Remove leading slash
         if (mockData[endpointName]) {
             console.log(`External API unavailable, using mock data for: ${endpointName}`);
+            res.setHeader('X-Data-Source', 'mock');
             res.status(200).json(mockData[endpointName]);
         } else {
-            res.status(503).json({
+            res.status(502).json({
                 status: 'error',
                 message: 'External API is currently unavailable. Please try again later.',
                 details: error.message
