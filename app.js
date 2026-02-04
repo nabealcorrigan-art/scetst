@@ -129,12 +129,21 @@ class TradeRoutePlanner {
             // Display test results
             const testResultContent = document.getElementById('test-result-content');
             
-            if (response.ok && (data.data || data.length >= 0)) {
+            // Check if we have valid data (either data.data array or data itself is an array)
+            const hasValidData = (data.data && Array.isArray(data.data)) || Array.isArray(data);
+            
+            if (response.ok && hasValidData) {
                 // Success case
                 testResultDiv.classList.remove('error');
                 testResultDiv.classList.add('success');
                 
-                const locationCount = Array.isArray(data.data) ? data.data.length : (Array.isArray(data) ? data.length : 'unknown');
+                // Determine location count
+                let locationCount = 'unknown';
+                if (Array.isArray(data.data)) {
+                    locationCount = data.data.length;
+                } else if (Array.isArray(data)) {
+                    locationCount = data.length;
+                }
                 
                 testResultContent.innerHTML = `
                     <p><strong>✓ Connection Successful!</strong></p>
