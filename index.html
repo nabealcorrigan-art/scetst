@@ -79,6 +79,7 @@
         </div>
 
         <div class="action-section">
+            <button id="test-api-btn" class="btn btn-secondary">Test API Connection</button>
             <button id="load-data-btn" class="btn btn-primary">Load Trade Data</button>
             <button id="calculate-route-btn" class="btn btn-success" disabled>Calculate Best Routes</button>
         </div>
@@ -89,6 +90,11 @@
         </div>
 
         <div id="error" class="error hidden"></div>
+
+        <div id="api-test-result" class="api-test-result hidden">
+            <h3>API Connection Test Result</h3>
+            <div id="test-result-content"></div>
+        </div>
 
         <div id="results" class="results hidden">
             <h2>Recommended Trade Routes</h2>

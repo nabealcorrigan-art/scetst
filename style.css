@@ -173,6 +173,17 @@ h3 {
     box-shadow: 0 4px 12px rgba(74, 158, 255, 0.4);
 }
 
+.btn-secondary {
+    background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+    color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(113, 128, 150, 0.4);
+}
+
 .btn-success {
     background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
     color: white;
@@ -215,6 +226,54 @@ h3 {
     padding: 15px;
     border-radius: 6px;
     margin-bottom: 20px;
+}
+
+.api-test-result {
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border: 2px solid;
+}
+
+.api-test-result.success {
+    background: rgba(72, 187, 120, 0.2);
+    border-color: #48bb78;
+}
+
+.api-test-result.error {
+    background: rgba(220, 38, 38, 0.2);
+    border-color: #dc2626;
+}
+
+.api-test-result h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.api-test-result.success h3 {
+    color: #48bb78;
+}
+
+.api-test-result.error h3 {
+    color: #dc2626;
+}
+
+#test-result-content {
+    color: #e0e0e0;
+    line-height: 1.8;
+}
+
+#test-result-content p {
+    margin-bottom: 10px;
+}
+
+#test-result-content .test-detail {
+    background: rgba(26, 31, 58, 0.6);
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+    font-family: monospace;
+    font-size: 0.9em;
 }
 
 .results {

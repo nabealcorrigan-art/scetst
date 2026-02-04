@@ -33,6 +33,7 @@ class TradeRoutePlanner {
     }
 
     initEventListeners() {
+        document.getElementById('test-api-btn').addEventListener('click', () => this.testAPIConnection());
         document.getElementById('load-data-btn').addEventListener('click', () => this.loadTradeData());
         document.getElementById('calculate-route-btn').addEventListener('click', () => this.calculateRoutes());
         document.getElementById('api-key').addEventListener('input', (e) => {
@@ -80,6 +81,166 @@ class TradeRoutePlanner {
         setTimeout(() => {
             errorDiv.classList.add('hidden');
         }, 5000);
+    }
+
+    async testAPIConnection() {
+        // Hide any previous test results
+        const testResultDiv = document.getElementById('api-test-result');
+        testResultDiv.classList.add('hidden');
+        
+        // Validate API key is present
+        if (!this.apiKey) {
+            this.showError('Please enter your UEX Corp API key before testing the connection');
+            return;
+        }
+
+        this.showLoading(true);
+        document.getElementById('error').classList.add('hidden');
+
+        try {
+            console.log('Testing API connection...');
+            
+            // Make a simple test request to the locations endpoint
+            // This is a lightweight endpoint that will verify authentication
+            const response = await fetch(`${this.baseUrl}/locations`, {
+                headers: {
+                    'Authorization': `Bearer ${this.apiKey}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const contentType = response.headers.get('content-type');
+            let data;
+            
+            try {
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    data = { data: text };
+                }
+            } catch (parseError) {
+                console.error('Error parsing response:', parseError);
+                data = { status: 'error', message: 'Failed to parse API response' };
+            }
+
+            this.showLoading(false);
+
+            // Display test results
+            const testResultContent = document.getElementById('test-result-content');
+            
+            if (response.ok && (data.data || data.length >= 0)) {
+                // Success case
+                testResultDiv.classList.remove('error');
+                testResultDiv.classList.add('success');
+                
+                const locationCount = Array.isArray(data.data) ? data.data.length : (Array.isArray(data) ? data.length : 'unknown');
+                
+                testResultContent.innerHTML = `
+                    <p><strong>✓ Connection Successful!</strong></p>
+                    <p>Your API key is valid and the connection to UEX Corp API is working properly.</p>
+                    <div class="test-detail">
+                        <strong>Test Details:</strong><br>
+                        • Status Code: ${response.status} ${response.statusText}<br>
+                        • Endpoint Tested: /locations<br>
+                        • Locations Available: ${locationCount}<br>
+                        • API Base URL: ${this.baseUrl}<br>
+                    </div>
+                    <p style="margin-top: 15px;">You can now proceed to load the full trade data.</p>
+                `;
+            } else {
+                // Error case
+                testResultDiv.classList.remove('success');
+                testResultDiv.classList.add('error');
+                
+                let errorMessage = 'Unknown error';
+                let troubleshooting = '';
+                
+                if (response.status === 401 || response.status === 403) {
+                    errorMessage = 'Authentication failed - Invalid API key';
+                    troubleshooting = `
+                        <p><strong>Troubleshooting:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>Verify your API key is correct</li>
+                            <li>Make sure you copied the entire Bearer token</li>
+                            <li>Check if your API application is active at <a href="https://uexcorp.space/api" target="_blank">uexcorp.space/api</a></li>
+                            <li>You may need to create a new API application</li>
+                        </ul>
+                    `;
+                } else if (response.status === 429) {
+                    errorMessage = 'Rate limit exceeded';
+                    troubleshooting = `
+                        <p><strong>Troubleshooting:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>You've made too many requests. The API limit is 10 requests per minute.</li>
+                            <li>Wait a few minutes and try again</li>
+                        </ul>
+                    `;
+                } else if (response.status >= 500) {
+                    errorMessage = `UEX Corp API server error (${response.status})`;
+                    troubleshooting = `
+                        <p><strong>Troubleshooting:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>The UEX Corp API server may be experiencing issues</li>
+                            <li>Try again in a few minutes</li>
+                            <li>Check <a href="https://uexcorp.space" target="_blank">uexcorp.space</a> for any service announcements</li>
+                        </ul>
+                    `;
+                } else if (data.status === 'error') {
+                    errorMessage = data.message || 'API returned an error';
+                }
+                
+                testResultContent.innerHTML = `
+                    <p><strong>✗ Connection Failed</strong></p>
+                    <p>${errorMessage}</p>
+                    <div class="test-detail">
+                        <strong>Test Details:</strong><br>
+                        • Status Code: ${response.status} ${response.statusText}<br>
+                        • Endpoint Tested: /locations<br>
+                        • API Base URL: ${this.baseUrl}<br>
+                    </div>
+                    ${troubleshooting}
+                `;
+            }
+            
+            testResultDiv.classList.remove('hidden');
+            
+        } catch (error) {
+            console.error('Error testing API connection:', error);
+            this.showLoading(false);
+            
+            // Display network/proxy error
+            const testResultDiv = document.getElementById('api-test-result');
+            const testResultContent = document.getElementById('test-result-content');
+            
+            testResultDiv.classList.remove('success');
+            testResultDiv.classList.add('error');
+            
+            let errorDetails = '';
+            if (error.message.includes('fetch')) {
+                errorDetails = `
+                    <p><strong>Troubleshooting:</strong></p>
+                    <ul style="margin-left: 20px;">
+                        <li>Make sure the proxy server is running (npm start)</li>
+                        <li>Check if you can access http://localhost:8000</li>
+                        <li>Verify your network connection</li>
+                        <li>Check if a firewall is blocking the connection</li>
+                    </ul>
+                `;
+            }
+            
+            testResultContent.innerHTML = `
+                <p><strong>✗ Connection Error</strong></p>
+                <p>Unable to connect to the API endpoint.</p>
+                <div class="test-detail">
+                    <strong>Error Details:</strong><br>
+                    ${error.message}
+                </div>
+                ${errorDetails}
+            `;
+            
+            testResultDiv.classList.remove('hidden');
+        }
     }
 
     async fetchAPI(endpoint) {
