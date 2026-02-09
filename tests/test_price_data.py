@@ -98,7 +98,7 @@ class TestPriceData:
             
             # Check for buy price (price_buy, buy_price, etc.)
             buy_price_found = False
-            buy_fields = ['price_buy', 'buy_price', 'buy', 'price_sell']
+            buy_fields = ['price_buy', 'buy_price', 'buy']
             for field in buy_fields:
                 if field in first_price and first_price[field] is not None:
                     logger.info(f"✓ Buy price field '{field}' found: {first_price[field]}")
@@ -107,7 +107,7 @@ class TestPriceData:
             
             # Check for sell price (price_sell, sell_price, etc.)
             sell_price_found = False
-            sell_fields = ['price_sell', 'sell_price', 'sell', 'price_buy']
+            sell_fields = ['price_sell', 'sell_price', 'sell']
             for field in sell_fields:
                 if field in first_price and first_price[field] is not None:
                     logger.info(f"✓ Sell price field '{field}' found: {first_price[field]}")
